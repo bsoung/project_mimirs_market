@@ -1,44 +1,46 @@
 @import url('https://fonts.googleapis.com/css?family=Ubuntu|Ubuntu+Condensed|Ubuntu+Mono');
-
 body {
 	font: 14px Ubuntu, "Lucida Grande", Helvetica, Arial, sans-serif;
 }
+
 body.page-bg {
-	background: rgb(0, 0, 0); /* Old browsers */
+	background: rgb(0, 0, 0);
+	/* Old browsers */
 	background: -moz-linear-gradient(
 		top,
 		rgba(0, 0, 0, 1) 0px,
 		rgba(15, 15, 15, 1) 50px,
 		rgba(25, 25, 25, 1) 1080px
-	); /* FF3.6-15 */
+	);
+	/* FF3.6-15 */
 	background: -webkit-linear-gradient(
 		top,
 		rgba(0, 0, 0, 1) 0px,
 		rgba(15, 15, 15, 1) 50px,
 		rgba(25, 25, 25, 1) 1080px
-	); /* Chrome10-25,Safari5.1-6 */
+	);
+	/* Chrome10-25,Safari5.1-6 */
 	background: linear-gradient(
 		to bottom,
 		rgba(0, 0, 0, 1) 0px,
 		rgba(15, 15, 15, 1) 50px,
 		rgba(25, 25, 25, 1) 1080px
-	); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid:DXImageTransform.Microsoft.gradient(
-			startColorstr='#000000',
-			endColorstr='#383838',
-			GradientType=0
-		); /* IE6-9 */
+	);
+	/* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#383838', GradientType=0);
+	/* IE6-9 */
 	background: url('../../images/page-bg.jpg') no-repeat fixed center;
 	background-size: cover;
 }
 
-.page-nav {
+/*.page-nav {
 	border-bottom: 1px solid #444;
-}
+}*/
 
 .page-nav-container {
-	z-index: 1;
-	position: fixed;
+	/*	z-index: 1;*/
+	/*	position: fixed;
+*/
 	height: 65px;
 	left: 0;
 	right: 0;
@@ -74,15 +76,17 @@ a {
 .refine-well {
 	border-bottom-left-radius: 2em;
 	border-bottom-right-radius: 2em;
-	position: absolute;
+	/*	position: absolute;
+*/
 	max-width: 50%;
 	top: 25px;
 	left: 25%;
-	color: #eee;
-	border: 1px solid #666;
-	background: url('../../images/refine-bg.png');
+	/*	color: #eee;
+*/
+	/*	border: 1px solid #666;*/
+	/*	background: url('../../images/refine-bg.png');*/
 	background-size: 15%;
-	box-shadow: 0 4px 8px #111;
+	/*	box-shadow: 0 4px 8px #111;*/
 }
 
 @media (max-width: 1540px) {
@@ -93,40 +97,36 @@ a {
 }
 
 /*** LANDING PAGE ***/
+
+.flex-center-block {
+	position: relative;
+	display: flex;
+	justify-content: center;
+}
+
+.landing-btn {
+	position: absolute;
+	top: 300px;
+}
+
 .landing-page-bg {
-	background: url('../../images/landing-page-bg.jpg');
-	background-position: center top;
-	background-color: black;
-	background-size: 50%;
-	background-repeat: no-repeat;
-}
-
-.landing-header-bg {
-	border-radius: 2em !important;
-	border: 1px solid #333;
-	box-shadow: 0 4px 6px #000;
-	background: url('../../images/landing-header-bg.jpg');
+	background: url('../../images/mimir_landing.png') no-repeat center center
+		fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
 	background-size: cover;
-	color: #eee;
-}
-
-.landing-page-footer {
-	box-shadow: 0 -12px 20px #000;
-	background-color: #000;
-	color: #ccc;
-	position: fixed;
-	left: 0;
-	right: 0;
-	bottom: 0;
 }
 
 /*** PRODUCTS PAGES ***/
+
 .products-container {
 	background: rgba(175, 175, 175, 1);
 	box-shadow: 0px 0 30px #000;
 }
+
 .products-list {
-	margin-top: 280px;
+	margin-top: 20px;
 }
 
 a.product {
