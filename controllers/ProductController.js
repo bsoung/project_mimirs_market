@@ -1,4 +1,5 @@
 const getModelWrapper = require("../models/index");
+const { navUtils } = require("../utils");
 
 /**
  * ProductController.js
@@ -132,8 +133,9 @@ module.exports = {
 		Promise.all([
 			wrapper.findAllProductsAndGroup(3, {
 				where: {
-					name: {
-						$ilike: `%${req.body.term}%`
+					$or: {
+						name: { $ilike: `%${req.body.term}%` },
+						desc: { $ilike: `%${req.body.term}%` }
 					}
 				}
 			}),
@@ -166,25 +168,40 @@ module.exports = {
 		const wrapper = getModelWrapper();
 		const sortMethod = req.body.refine.sort;
 
-		switch (sortMap[sortMethod]) {
-			case "Name Ascending":
-				Promise.all([
-					wrapper.findAllProductsAndGroup(3, {
-						order: [["name", "ASC"]]
-					}),
-					wrapper.findAllCategories()
-				])
-					.then(_renderSortResults)
-					.catch(err => console.error(err));
+		let type = sortMap[sortMethod];
 
-			default:
-				return;
-		}
+		navUtils.processSearch(type, _renderSortResults, wrapper);
 
 		function _renderSortResults(data) {
 			let [products, categories] = data;
 
 			res.render("products/index", { products, categories });
+		}
+	},
+
+	filter: function(req, res) {
+		const wrapper = getModelWrapper();
+
+		let { productQuery, categoriesQuery } = navUtils.buildQuery(req);
+
+		Promise.all([
+			wrapper.findAllProductsAndGroup(3, productQuery),
+			wrapper.findAllCategories(categoriesQuery)
+		])
+			.then(_renderFilteredResults)
+			.catch(err => console.error(err));
+
+		function _renderFilteredResults(data) {
+			// reset our categories to full
+			const wrapper = getModelWrapper();
+			wrapper
+				.findAllCategories()
+				.then(categories => {
+					let [products] = data;
+
+					res.render("products/index", { products, categories });
+				})
+				.catch(err => console.error(err));
 		}
 	}
 };

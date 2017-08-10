@@ -48,6 +48,10 @@ function determineSearch(searchType) {
 			return controller.sort;
 			break;
 
+		case "filter":
+			return controller.filter;
+			break;
+
 		default:
 			return undefined;
 	}

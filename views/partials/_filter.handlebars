@@ -1,32 +1,32 @@
-<form id=class="form">
+<form id=class="form" action="/products/type/filter" method="post">
   <div class="form-group col-xs-3 col-xs-offset-1">
-		<select class="form-control" name="refine[filter][categoryId]">
+		<select class="form-control" name="categoryId">
       <option value="0">
         Category
       </option>
       {{#each categories as |category|}}
-		  <option value="{{category.id}}">{{category.name}}</option>
+		  <option name="{{category.name}}" value="{{category.id}}">{{category.name}}</option>
       {{/each}}
 		</select>
   </div>
   <div class="form-group col-xs-3">
-    <select class="form-control" name="refine[filter][minPrice]">
-      <option value="0">No Minimum Price</option>
-      <option value="1">$100</option>
-      <option value="2">$500</option>
-      <option value="3">$1000</option>
-      <option value="4">$2000</option>
-      <option value="5">$5000</option>
+    <select class="form-control" name="minPrice">
+      <option name="min1" value="0">No Minimum Price</option>
+      <option name="min2" value="1">$5</option>
+      <option name="min3" value="2">$50</option>
+      <option name="min4" value="3">$100</option>
+      <option name="min5" value="4">$300</option>
+      <option name="min6" value="5">$500</option>
     </select>
   </div>
   <div class="form-group col-xs-3">
-    <select class="form-control" name="refine[filter][minPrice]">
-      <option value="0">No Maximum Price</option>
-      <option value="1">$500</option>
-      <option value="2">$1000</option>
-      <option value="3">$2000</option>
-      <option value="4">$5000</option>
-      <option value="5">$10000</option>
+    <select class="form-control" name="maxPrice">
+      <option name="max1" value="0">No Maximum Price</option>
+      <option name="max2" value="1">$50</option>
+      <option name="max3" value="2">$100</option>
+      <option name="max4" value="3">$300</option>
+      <option name="max5" value="4">$500</option>
+      <option name="max6" value="5">$1000</option>
     </select>
   </div>
   <button type="submit" class="btn btn-success"></span>Filter &nbsp;<span class="glyphicon glyphicon-filter"></button>
