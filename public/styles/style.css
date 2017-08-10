@@ -1,99 +1,65 @@
 @import url('https://fonts.googleapis.com/css?family=Ubuntu|Ubuntu+Condensed|Ubuntu+Mono');
+* {
+	box-sizing: border-box;
+}
+
 body {
 	font: 14px Ubuntu, "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-body.page-bg {
-	background: rgb(0, 0, 0);
-	/* Old browsers */
-	background: -moz-linear-gradient(
-		top,
-		rgba(0, 0, 0, 1) 0px,
-		rgba(15, 15, 15, 1) 50px,
-		rgba(25, 25, 25, 1) 1080px
-	);
-	/* FF3.6-15 */
-	background: -webkit-linear-gradient(
-		top,
-		rgba(0, 0, 0, 1) 0px,
-		rgba(15, 15, 15, 1) 50px,
-		rgba(25, 25, 25, 1) 1080px
-	);
-	/* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(
-		to bottom,
-		rgba(0, 0, 0, 1) 0px,
-		rgba(15, 15, 15, 1) 50px,
-		rgba(25, 25, 25, 1) 1080px
-	);
-	/* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#383838', GradientType=0);
-	/* IE6-9 */
-	background: url('../../images/page-bg.jpg') no-repeat fixed center;
-	background-size: cover;
+a:link {
+	text-decoration: none !important;
 }
 
-/*.page-nav {
-	border-bottom: 1px solid #444;
-}*/
+.advanced-search {
+	background-color: #f5f5f5;
+}
 
 .page-nav-container {
-	/*	z-index: 1;*/
-	/*	position: fixed;
-*/
+	padding-top: 7px;
+	z-index: 99;
+	position: fixed;
 	height: 65px;
 	left: 0;
 	right: 0;
-	background-color: #333;
-	box-shadow: 0 1px 2px #111;
+	background-color: #3a076f;
 }
 
-.page-container {
-	min-width: 1280px;
-	z-index: 0;
+.page-nav-container a {
+	color: white;
+}
+
+.page-nav-container a:hover {
+	color: green;
 }
 
 .page-footer {
-	z-index: -2;
-	position: fixed;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	box-shadow: 0 -1px 2px #222;
-	border-top: 1px solid #444;
-	background-color: #222;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding-top: 15px;
+	padding-left: 10px;
+	padding-right: 10px;
+	color: white;
+	background-color: #3a076f;
 	height: 45px;
 }
 
-a {
-	color: #00b7ff;
+.page-footer a {
+	color: white;
+}
+
+.well {
+	position: absolute;
+	top: 57px;
 }
 
 .well h3 {
 	margin-top: 0;
 }
 
-.refine-well {
-	border-bottom-left-radius: 2em;
-	border-bottom-right-radius: 2em;
-	/*	position: absolute;
-*/
-	max-width: 50%;
-	top: 25px;
-	left: 25%;
-	/*	color: #eee;
-*/
-	/*	border: 1px solid #666;*/
-	/*	background: url('../../images/refine-bg.png');*/
-	background-size: 15%;
-	/*	box-shadow: 0 4px 8px #111;*/
-}
-
-@media (max-width: 1540px) {
-	.refine-well {
-		max-width: 70%;
-		left: 15%;
-	}
+.caption {
+	color: black;
 }
 
 /*** LANDING PAGE ***/
@@ -106,7 +72,7 @@ a {
 
 .landing-btn {
 	position: absolute;
-	top: 300px;
+	top: 320px;
 }
 
 .landing-page-bg {
@@ -121,27 +87,47 @@ a {
 /*** PRODUCTS PAGES ***/
 
 .products-container {
-	background: rgba(175, 175, 175, 1);
-	box-shadow: 0px 0 30px #000;
+	background: #f5f5f5;
+}
+
+.product-container {
+	margin-bottom: 20px;
 }
 
 .products-list {
-	margin-top: 20px;
+	margin-top: 270px;
+	margin-bottom: 100px;
+}
+
+.add-cart-btn {
+	color: white;
+	background-color: #3a076f;
+}
+
+.text-center a:hover {
+	color: white;
+	background-color: green;
+}
+
+.caption {
+	font-size: 0.9em;
+	margin-bottom: 20px;
+	overflow: scroll;
+	height: 100px;
+	max-height: 100px;
+	max-width: 400px;
 }
 
 a.product {
 	margin-bottom: 0;
 }
 
-div.product {
-	box-shadow: 0 1px 2px #444;
-	padding: 4px;
-	margin-left: 2px;
-	margin-right: 2px;
-	margin-bottom: 1em;
-	padding-left: 1em;
-	padding-right: 1em;
-	border-left: 1px solid #999;
-	border-right: 1px solid #999;
-	border-bottom: 1px solid #999;
+.well .btn-success:hover {
+	color: white;
+	background-color: #3a076f;
+}
+
+.btn-success {
+	border: none;
+	background-color: green;
 }
