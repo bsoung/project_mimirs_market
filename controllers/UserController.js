@@ -1,4 +1,4 @@
-const getModelWrapper = require('../models/index');
+const getModelWrapper = require("../models/index");
 /**
  * UserController.js
  *
@@ -11,13 +11,14 @@ module.exports = {
 	index: function(req, res) {
 		let wrapper = getModelWrapper();
 
-		wrapper
-			.findAllUsers()
+		Promise.all([wrapper.findAllUsers()])
 			.then(_renderUsersIndex)
-			.catch(_catchError.call(res, 'Error getting users from database.'));
+			.catch(_catchError.call(res, "Error getting users from database."));
 
-		function _renderUsersIndex(users) {
-			res.render('users/index', { users });
+		function _renderUsersIndex(data) {
+			let [users] = data;
+
+			res.render("users/index", { users });
 		}
 	},
 
@@ -28,18 +29,20 @@ module.exports = {
 		let wrapper = getModelWrapper();
 		const id = req.params.id;
 
-		wrapper
-			.findUserById(id)
+		Promise.all([wrapper.findUserById(id)])
 			.then(_renderUserView)
-			.catch(_catchError.call(res, 'Error getting user from database.'));
+			.catch(_catchError.call(res, "Error getting user from database."));
 
-		function _renderUserView(user) {
+		function _renderUserView(data) {
+			let [user] = data;
+
 			if (!user) {
 				return res.status(404).json({
-					message: 'No such User'
+					message: "No such User"
 				});
 			}
-			res.render('users/view', { user });
+
+			res.render("users/view", { user });
 		}
 	},
 
@@ -57,7 +60,7 @@ module.exports = {
 		User.save(function(err, User) {
 			if (err) {
 				return res.status(500).json({
-					message: 'Error when creating User',
+					message: "Error when creating User",
 					error: err
 				});
 			}
@@ -73,13 +76,13 @@ module.exports = {
 		User.findOne({ _id: id }, function(err, User) {
 			if (err) {
 				return res.status(500).json({
-					message: 'Error when getting User',
+					message: "Error when getting User",
 					error: err
 				});
 			}
 			if (!User) {
 				return res.status(404).json({
-					message: 'No such User'
+					message: "No such User"
 				});
 			}
 
@@ -93,7 +96,7 @@ module.exports = {
 			User.save(function(err, User) {
 				if (err) {
 					return res.status(500).json({
-						message: 'Error when updating User.',
+						message: "Error when updating User.",
 						error: err
 					});
 				}
@@ -111,7 +114,7 @@ module.exports = {
 		User.findByIdAndRemove(id, function(err, User) {
 			if (err) {
 				return res.status(500).json({
-					message: 'Error when deleting the User.',
+					message: "Error when deleting the User.",
 					error: err
 				});
 			}

@@ -10,14 +10,14 @@ module.exports = {
    * ProductController.index()
    */
 	index: function(req, res) {
-		let wrapper = getModelWrapper();
+		const wrapper = getModelWrapper();
 
 		Promise.all([
 			wrapper.findAllProductsAndGroup(3, { limit: 10 }),
 			wrapper.findAllCategories()
 		])
 			.then(_renderProductsIndex)
-			.catch(_catchError.call(res, "Error getting products from database."));
+			.catch(err => console.error(err));
 
 		function _renderProductsIndex(data) {
 			let [products, categories] = data;
@@ -30,21 +30,19 @@ module.exports = {
    * ProductController.view()
    */
 	view: function(req, res) {
-		var id = req.params.id;
-		ProductModel.findOne({ _id: id }, function(err, Product) {
-			if (err) {
-				return res.status(500).json({
-					message: "Error when getting Product.",
-					error: err
-				});
-			}
-			if (!Product) {
-				return res.status(404).json({
-					message: "No such Product"
-				});
-			}
-			return res.json(Product);
-		});
+		// TODO
+		const wrapper = getModelWrapper();
+		const id = req.params.id;
+
+		Promise.all([wrapper.findProductById(id)])
+			.then(_renderProductView)
+			.catch(err => console.error(err));
+
+		function _renderProductView(data) {
+			let [product] = data;
+
+			res.render("products/view", { product });
+		}
 	},
 
 	/**
@@ -123,12 +121,70 @@ module.exports = {
 			}
 			return res.status(204).json();
 		});
-	}
-};
+	},
 
-const _catchError = msg => err => {
-	return this.status(500).json({
-		message: msg,
-		error: err
-	});
+	/**
+   * Search 
+   */
+	search: function(req, res) {
+		const wrapper = getModelWrapper();
+
+		Promise.all([
+			wrapper.findAllProductsAndGroup(3, {
+				where: {
+					name: {
+						$ilike: `%${req.body.term}%`
+					}
+				}
+			}),
+			wrapper.findAllCategories()
+		])
+			.then(_renderSearchResults)
+			.catch(err => console.error(err));
+
+		function _renderSearchResults(data) {
+			let [products, categories] = data;
+
+			if (!products.length) {
+				res.end("No products found");
+				return;
+			}
+
+			res.render("products/index", { products, categories });
+		}
+	},
+
+	sort: function(req, res) {
+		const sortMap = {
+			1: "Name Ascending",
+			2: "Price Ascending",
+			3: "Price Descending",
+			4: "Newest First",
+			5: "Oldest First"
+		};
+
+		const wrapper = getModelWrapper();
+		const sortMethod = req.body.refine.sort;
+
+		switch (sortMap[sortMethod]) {
+			case "Name Ascending":
+				Promise.all([
+					wrapper.findAllProductsAndGroup(3, {
+						order: [["name", "ASC"]]
+					}),
+					wrapper.findAllCategories()
+				])
+					.then(_renderSortResults)
+					.catch(err => console.error(err));
+
+			default:
+				return;
+		}
+
+		function _renderSortResults(data) {
+			let [products, categories] = data;
+
+			res.render("products/index", { products, categories });
+		}
+	}
 };

@@ -131,3 +131,7 @@ a.product {
 	border: none;
 	background-color: green;
 }
+
+.error-info {
+	z-index: 999;
+}
