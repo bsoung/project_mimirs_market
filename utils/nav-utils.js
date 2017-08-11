@@ -71,7 +71,7 @@ module.exports = {
 		};
 	},
 
-	processSearch: function(searchType, callback, wrapper) {
+	processSearch: function(res, searchType, callback, wrapper) {
 		switch (searchType) {
 			case "Name Ascending":
 				Promise.all([
@@ -129,7 +129,7 @@ module.exports = {
 				break;
 
 			default:
-				res.render("/");
+				res.redirect("back");
 				return;
 		}
 	}

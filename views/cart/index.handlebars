@@ -15,13 +15,28 @@
 		    <p>{{product.price}}</p>
 		  </div>
 		  <div>
-		  	<label for="product-quantity">Amount</label>
-		  	<input  type="number" name="product-quantity" value="{{product.count}}">
+				<form action="/products/cart" method="post">
+					<input type="hidden" name="_method" value="PUT">
+					<input type="hidden" name="id" value="{{product.productId}}">
+					<label for="quantity">Amount</label>
+					<input  type="number" name="quantity" value="{{product.count}}">
+					<button>Set Quantity</button>
+				</form>
+		  </div>
+		  <div>
+		  	<form action="/products/cart" method="post">
+					<input type="hidden" name="_method" value="DELETE">
+					<input type="hidden" name="id" value="{{product.productId}}">
+					<button>Remove From Cart</button>
+				</form>
 		  </div>
 		</div>
 	{{/each}}
 	<div class="total-cost">
 		<h2>Total: ${{total.amount}}</h2>
+	</div>
+	<div>
+		
 	</div>
 </div>
 

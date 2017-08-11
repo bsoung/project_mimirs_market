@@ -69,8 +69,6 @@ module.exports = {
 			let category = categories[index].name;
 			product.dataValues["category"] = category;
 
-			console.log(product, "?????");
-
 			return res.render("products/view", { product, cartData, categories });
 		}
 	},
@@ -102,39 +100,66 @@ module.exports = {
    * ProductController.update()
    */
 	update: function(req, res) {
-		var id = req.params.id;
-		ProductModel.findOne({ _id: id }, function(err, Product) {
-			if (err) {
-				return res.status(500).json({
-					message: "Error when getting Product",
-					error: err
-				});
-			}
-			if (!Product) {
-				return res.status(404).json({
-					message: "No such Product"
-				});
-			}
+		// wrapper.findProductById(req.params.id).then(product => {
+		// 	if (!product) {
+		// 		return res.status(404).json({
+		// 			message: "No such product"
+		// 		});
+		// 	}
+		// 	console.log(product, "what is this?");
+		// 	res.end("update");
+		// });
+		// ProductModel.findOne({ _id: id }, function(err, Product) {
+		// 	if (err) {
+		// 		return res.status(500).json({
+		// 			message: "Error when getting Product",
+		// 			error: err
+		// 		});
+		// 	}
+		// 	if (!Product) {
+		// 		return res.status(404).json({
+		// 			message: "No such Product"
+		// 		});
+		// 	}
+		// 	Product.name = req.body.name ? req.body.name : Product.name;
+		// 	Product.sku = req.body.sku ? req.body.sku : Product.sku;
+		// 	Product.desc = req.body.desc ? req.body.desc : Product.desc;
+		// 	Product.price = req.body.price ? req.body.price : Product.price;
+		// 	Product.categoryId = req.body.categoryId
+		// 		? req.body.categoryId
+		// 		: Product.categoryId;
+		// 	Product.save(function(err, Product) {
+		// 		if (err) {
+		// 			return res.status(500).json({
+		// 				message: "Error when updating Product.",
+		// 				error: err
+		// 			});
+		// 		}
+		// 		return res.json(Product);
+		// 	});
+		// });
+	},
 
-			Product.name = req.body.name ? req.body.name : Product.name;
-			Product.sku = req.body.sku ? req.body.sku : Product.sku;
-			Product.desc = req.body.desc ? req.body.desc : Product.desc;
-			Product.price = req.body.price ? req.body.price : Product.price;
-			Product.categoryId = req.body.categoryId
-				? req.body.categoryId
-				: Product.categoryId;
+	removeFromCart: function(req, res) {
+		const id = parseInt(req.body.id);
+		let { products } = req.session;
 
-			Product.save(function(err, Product) {
-				if (err) {
-					return res.status(500).json({
-						message: "Error when updating Product.",
-						error: err
-					});
-				}
+		const index = products.findIndex(p => p.productId === id);
+		products = products.splice(index, 1);
 
-				return res.json(Product);
-			});
-		});
+		console.log(products);
+
+		res.redirect("back");
+	},
+
+	updateCart: function(req, res) {
+		const id = parseInt(req.body.id);
+		const { products } = req.session;
+
+		const index = products.findIndex(p => p.productId === id);
+		req.session.products[index].count = req.body.quantity;
+
+		res.redirect("back");
 	},
 
 	addToCart: function(req, res) {
@@ -142,7 +167,7 @@ module.exports = {
 			req.session["products"] = [];
 		}
 
-		const productOptions = {
+		const prodOptions = {
 			where: {
 				id: req.body.productId
 			}
@@ -152,14 +177,16 @@ module.exports = {
 		let item = {};
 
 		wrapper
-			.findAllProducts(productOptions)
+			.findAllProducts(prodOptions)
 			.then(products => {
-				item["name"] = products[0]["name"];
-				item["img"] = products[0]["img"];
-				item["price"] = products[0]["price"];
-				item["productId"] = products[0]["id"];
-				item["categoryId"] = products[0]["categoryId"];
+				const attributes = ["name", "img", "price", "categoryId"];
+
+				attributes.forEach(attr => {
+					item[attr] = products[0][attr];
+				});
+
 				item["count"] = 1;
+				item["productId"] = products[0]["id"];
 
 				const catOptions = {
 					where: {
@@ -187,11 +214,20 @@ module.exports = {
 	},
 
 	viewCart: function(req, res) {
+		if (req.session["products"] === undefined) {
+			req.session["products"] = [];
+		}
+
 		let cartData = req.session.products;
 		let total;
 		let sum = 0;
 
 		wrapper.findAllCategories().then(categories => {
+			// if (cartData[0] === null) {
+			// 	total = sum;
+			// 	return res.render("cart/index", { cartData, categories, total });
+			// }
+
 			cartData.forEach(product => {
 				sum += parseFloat(product.price) * product.count;
 			});
@@ -199,7 +235,7 @@ module.exports = {
 			req.session["totalCost"] = { amount: sum.toFixed(2) };
 			total = req.session.totalCost;
 
-			res.render("cart/index", { cartData, categories, total });
+			return res.render("cart/index", { cartData, categories, total });
 		});
 
 		// var result = parseFloat('2.3') + parseFloat('2.4');
@@ -278,7 +314,7 @@ module.exports = {
 
 		let type = sortMap[sortMethod];
 
-		navUtils.processSearch(type, _renderSortResults, wrapper);
+		navUtils.processSearch(res, type, _renderSortResults, wrapper);
 
 		function _renderSortResults(data) {
 			let categoryProducts = [];
@@ -298,7 +334,7 @@ module.exports = {
 			return res.render("products/index", { categoryProducts, categories });
 		}
 	},
-
+	// TODO: FILTER HALF BROKE - category searching
 	filter: function(req, res) {
 		let { productQuery, categoriesQuery } = navUtils.buildQuery(req);
 
@@ -336,3 +372,15 @@ module.exports = {
 		}
 	}
 };
+
+async function read() {
+	var md = hget(html, {
+		markdown: true,
+		root: "main",
+		ignore: ".at-subscribe,.mm-comments,.de-sidebar"
+	});
+	var txt = marked(md, {
+		renderer: new Term()
+	});
+	console.log(txt);
+}

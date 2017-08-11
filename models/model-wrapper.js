@@ -2,7 +2,8 @@ const DB_MAP = {
 	sequelize: {
 		findAll: "findAll",
 		findById: "findById",
-		create: "create"
+		create: "create",
+		save: "save"
 	},
 	mongoose: {
 		findAll: "find",
@@ -25,6 +26,10 @@ class ModelWrapper {
 
 	create(model, options) {
 		return this.db[model][DB_MAP[this.type]["create"]](options);
+	}
+
+	save(model) {
+		return this.db[model][DB_MAP[this.type]["create"]]();
 	}
 }
 

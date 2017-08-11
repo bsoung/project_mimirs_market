@@ -57,6 +57,10 @@ class SequelizeWrapper extends ModelWrapper {
 		return this.findById(MODEL_PRODUCT, id);
 	}
 
+	saveProduct(callback) {
+		return this.save(MODEL_PRODUCT);
+	}
+
 	/******************************
    * CATEGORY
    */

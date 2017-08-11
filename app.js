@@ -8,6 +8,9 @@ const bodyParser = require("body-parser");
 const exphbs = require("express-handlebars");
 const session = require("express-session");
 
+const methodOverride = require("method-override");
+const getPostSupport = require("express-method-override-get-post-support");
+
 const app = express();
 require("dotenv").config();
 
@@ -57,6 +60,7 @@ app.set("view engine", "handlebars");
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride(getPostSupport.callback, getPostSupport.options));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 

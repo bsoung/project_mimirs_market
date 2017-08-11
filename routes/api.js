@@ -21,47 +21,48 @@ function determineMethod(req) {
 	if (req.params.id === undefined) {
 		if (req.method === "GET") {
 			return controller.index;
-		} else {
-			return controller.create;
 		}
+
+		return controller.create;
 	}
 
 	if (req.method === "GET") {
-		switch (req.params.id) {
-			case "cart":
-				return controller.viewCart;
-			default:
-				return;
-		}
+		const getMap = {
+			cart: controller.viewCart
+		};
 
-		return controller.view;
+		return getMap[req.params.id] ? getMap[req.params.id] : controller.view;
 	}
 
 	if (req.method === "POST") {
-		switch (req.params.id) {
-			case "cart":
-				return controller.addToCart;
+		const postMap = {
+			cart: controller.addToCart,
+			search: controller.search,
+			sort: controller.sort,
+			filter: controller.filter
+		};
 
-			case "search":
-				return controller.search;
-
-			case "sort":
-				return controller.sort;
-
-			case "filter":
-				return controller.filter;
-
-			default:
-				return;
-		}
+		return postMap[req.params.id] ? postMap[req.params.id] : undefined;
 	}
 
 	if (req.method === "PUT") {
-		return controller.update;
+		const updateMap = {
+			cart: controller.updateCart
+		};
+
+		return updateMap[req.params.id]
+			? updateMap[req.params.id]
+			: controller.update;
 	}
 
 	if (req.method === "DELETE") {
-		return controller.remove;
+		const deleteMap = {
+			cart: controller.removeFromCart
+		};
+
+		return deleteMap[req.params.id]
+			? deleteMap[req.params.id]
+			: controller.remove;
 	}
 
 	return undefined;
