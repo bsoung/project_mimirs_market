@@ -1,5 +1,5 @@
 const getModelWrapper = require("../models/index");
-const wrapper = getModelWrapper();
+const wrapper = getModelWrapper(); // default sequelize wrapper
 const { navUtils } = require("../utils");
 
 /**
@@ -11,89 +11,69 @@ module.exports = {
 	/**
    * ProductController.index()
    */
-	index: function(req, res) {
-		Promise.all([
-			wrapper.findAllProductsAndGroup(3),
-			wrapper.findAllCategories()
-		])
-			.then(_renderProductsIndex)
-			.catch(err => {
-				return res.json({
-					confirmation: "fail",
-					error: err.message
-				});
+	index: async function(req, res) {
+		let products = await wrapper.findAllProductsAndGroup(3);
+		let categories = await wrapper.findAllCategories();
+
+		let categoryProducts = [];
+		let cartData = req.session.products;
+
+		products.forEach(productGroup => {
+			productGroup = productGroup.map(product => {
+				let index = categories.findIndex(c => c.id === product.categoryId);
+				let category = categories[index].name;
+				product.dataValues["category"] = category;
+				return product;
 			});
 
-		function _renderProductsIndex(data) {
-			let categoryProducts = [];
+			categoryProducts.push(productGroup);
+		});
 
-			let [products, categories] = data;
-			let cartData = req.session.products;
-
-			products.forEach(productGroup => {
-				productGroup = productGroup.map(product => {
-					let index = categories.findIndex(c => c.id === product.categoryId);
-					let category = categories[index].name;
-					product.dataValues["category"] = category;
-					return product;
-				});
-
-				categoryProducts.push(productGroup);
-			});
-
-			return res.render("products/index", {
-				categoryProducts,
-				categories,
-				cartData
-			});
-		}
+		return res.render("products/index", {
+			categoryProducts,
+			categories,
+			cartData
+		});
 	},
 
 	/**
    * ProductController.view()
    */
-	view: function(req, res) {
-		const wrapper = getModelWrapper();
+	view: async function(req, res) {
 		const id = req.params.id;
+		let product = await wrapper.findProductById(id);
+		let categories = await wrapper.findAllCategories();
 
-		Promise.all([wrapper.findProductById(id), wrapper.findAllCategories()])
-			.then(_renderProductView)
-			.catch(err => console.error(err));
+		let categoryProducts = [];
+		let cartData = req.session.products;
 
-		function _renderProductView(data) {
-			let categoryProducts = [];
-			let [product, categories] = data;
-			let cartData = req.session.products;
+		let index = categories.findIndex(c => c.id === product.categoryId);
+		let category = categories[index].name;
+		product.dataValues["category"] = category;
 
-			let index = categories.findIndex(c => c.id === product.categoryId);
-			let category = categories[index].name;
-			product.dataValues["category"] = category;
-
-			return res.render("products/view", { product, cartData, categories });
-		}
+		return res.render("products/view", { product, cartData, categories });
 	},
 
 	/**
    * ProductController.create()
    */
 	create: function(req, res) {
-		var Product = new ProductModel({
-			name: req.body.name,
-			sku: req.body.sku,
-			desc: req.body.desc,
-			price: req.body.price,
-			categoryId: req.body.categoryId
-		});
-
-		Product.save(function(err, Product) {
-			if (err) {
-				return res.status(500).json({
-					message: "Error when creating Product",
-					error: err
-				});
-			}
-			return res.status(201).json(Product);
-		});
+		// var Product = new ProductModel({
+		// 	name: req.body.name,
+		// 	sku: req.body.sku,
+		// 	desc: req.body.desc,
+		// 	price: req.body.price,
+		// 	categoryId: req.body.categoryId
+		// });
+		// Product.save(function(err, Product) {
+		// 	if (err) {
+		// 		return res.status(500).json({
+		// 			message: "Error when creating Product",
+		// 			error: err
+		// 		});
+		// 	}
+		// 	return res.status(201).json(Product);
+		// });
 	},
 
 	/**
@@ -145,11 +125,14 @@ module.exports = {
 		let { products } = req.session;
 
 		const index = products.findIndex(p => p.productId === id);
+
+		if (index === -1) {
+			return res.end("could not find item placeholder");
+		}
+
 		products = products.splice(index, 1);
 
-		console.log(products);
-
-		res.redirect("back");
+		return res.redirect("back");
 	},
 
 	updateCart: function(req, res) {
@@ -159,13 +142,16 @@ module.exports = {
 		const index = products.findIndex(p => p.productId === id);
 		req.session.products[index].count = req.body.quantity;
 
-		res.redirect("back");
+		return res.redirect("back");
 	},
 
-	addToCart: function(req, res) {
+	addToCart: async function(req, res) {
 		if (req.session["products"] === undefined) {
 			req.session["products"] = [];
 		}
+
+		let obj = {};
+		let item = {};
 
 		const prodOptions = {
 			where: {
@@ -173,47 +159,40 @@ module.exports = {
 			}
 		};
 
-		let obj = {};
-		let item = {};
+		let products = await wrapper.findAllProducts(prodOptions);
 
-		wrapper
-			.findAllProducts(prodOptions)
-			.then(products => {
-				const attributes = ["name", "img", "price", "categoryId"];
+		const attributes = ["name", "img", "price", "categoryId"];
+		attributes.forEach(attr => {
+			item[attr] = products[0][attr];
+		});
 
-				attributes.forEach(attr => {
-					item[attr] = products[0][attr];
-				});
+		const catOptions = {
+			where: {
+				id: item.categoryId
+			}
+		};
 
-				item["count"] = 1;
-				item["productId"] = products[0]["id"];
+		item["count"] = 1;
+		item["productId"] = products[0]["id"];
 
-				const catOptions = {
-					where: {
-						id: item.categoryId
-					}
-				};
+		let categories = await wrapper.findAllCategories(catOptions);
 
-				return wrapper.findAllCategories(catOptions);
-			})
-			.then(categories => {
-				item["categoryName"] = categories[0]["name"];
+		item["categoryName"] = categories[0]["name"];
 
-				let index = req.session.products.findIndex(
-					p => p.productId === item.productId
-				);
+		let index = req.session.products.findIndex(
+			p => p.productId === item.productId
+		);
 
-				if (index === -1) {
-					req.session.products.push(item);
-				} else {
-					req.session.products[index].count += 1;
-				}
+		if (index === -1) {
+			req.session.products.push(item);
+		} else {
+			req.session.products[index].count += 1;
+		}
 
-				return res.redirect("/products");
-			});
+		return res.redirect("/products");
 	},
 
-	viewCart: function(req, res) {
+	viewCart: async function(req, res) {
 		if (req.session["products"] === undefined) {
 			req.session["products"] = [];
 		}
@@ -222,24 +201,16 @@ module.exports = {
 		let total;
 		let sum = 0;
 
-		wrapper.findAllCategories().then(categories => {
-			// if (cartData[0] === null) {
-			// 	total = sum;
-			// 	return res.render("cart/index", { cartData, categories, total });
-			// }
+		let categories = await wrapper.findAllCategories();
 
-			cartData.forEach(product => {
-				sum += parseFloat(product.price) * product.count;
-			});
-
-			req.session["totalCost"] = { amount: sum.toFixed(2) };
-			total = req.session.totalCost;
-
-			return res.render("cart/index", { cartData, categories, total });
+		cartData.forEach(product => {
+			sum += parseFloat(product.price) * product.count;
 		});
 
-		// var result = parseFloat('2.3') + parseFloat('2.4');
-		// alert(result.toFixed(2));​
+		req.session["totalCost"] = { amount: sum.toFixed(2) };
+		total = req.session.totalCost;
+
+		return res.render("cart/index", { cartData, categories, total });
 	},
 
 	/**

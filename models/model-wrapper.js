@@ -7,7 +7,9 @@ const DB_MAP = {
 	},
 	mongoose: {
 		findAll: "find",
-		findById: "findById"
+		findById: "findById",
+		create: "create",
+		save: "save"
 	}
 };
 

@@ -2,6 +2,14 @@
   {{>_navbar cartData=cartData categories=categories}}
 </header>
 
+<div class="row step-table">
+    <div class="step-info" style="display: table; margin: auto;">
+        <span class="step step_complete"> <a href="/products/cart" class="check-bc">Cart</a> <span class="step_line step_complete"> </span> <span class="step_line backline"> </span> </span>
+        <span class="step"> <a href="#" class="check-bc">Checkout</a> <span class="step_line "> </span> <span class="step_line"> </span> </span>
+        <span class="step_thankyou check-bc step_complete">Thank you</span>
+    </div>
+</div>
+
 <div class="cart-display">
 	<h1>Your Cart</h1>
 	{{#each cartData as |product|}}
@@ -22,8 +30,6 @@
 					<input  type="number" name="quantity" value="{{product.count}}">
 					<button>Set Quantity</button>
 				</form>
-		  </div>
-		  <div>
 		  	<form action="/products/cart" method="post">
 					<input type="hidden" name="_method" value="DELETE">
 					<input type="hidden" name="id" value="{{product.productId}}">
@@ -35,8 +41,9 @@
 	<div class="total-cost">
 		<h2>Total: ${{total.amount}}</h2>
 	</div>
-	<div>
-		
-	</div>
+	<form action="/orders" method="post">
+		<input type="hidden" name="total" value="{{total.amount}}">
+		<button>Proceed to Checkout</button>
+	</form>
 </div>
 

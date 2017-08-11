@@ -28,7 +28,8 @@ function determineMethod(req) {
 
 	if (req.method === "GET") {
 		const getMap = {
-			cart: controller.viewCart
+			cart: controller.viewCart,
+			success: controller.viewSuccess
 		};
 
 		return getMap[req.params.id] ? getMap[req.params.id] : controller.view;
@@ -39,7 +40,8 @@ function determineMethod(req) {
 			cart: controller.addToCart,
 			search: controller.search,
 			sort: controller.sort,
-			filter: controller.filter
+			filter: controller.filter,
+			charge: controller.charge
 		};
 
 		return postMap[req.params.id] ? postMap[req.params.id] : undefined;

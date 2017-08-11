@@ -12,7 +12,9 @@ const methodOverride = require("method-override");
 const getPostSupport = require("express-method-override-get-post-support");
 
 const app = express();
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") {
+	require("dotenv").config();
+}
 
 const mongoose = require("mongoose");
 const Promise = require("bluebird");
@@ -33,7 +35,7 @@ app.use(
 mongoose.Promise = Promise;
 
 // connect to mongoose
-const beginConnection = mongoose.createConnection(process.env.DB_URL, {
+const beginConnection = mongoose.connect(process.env.DB_URL, {
 	useMongoClient: true
 });
 
@@ -65,6 +67,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", require("./routes/index"));
+// app.use("/api", require("./routes/api"));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

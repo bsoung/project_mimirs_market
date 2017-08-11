@@ -184,7 +184,108 @@ a.product {
 }
 
 .cart-display {
-  margin-top: 160px;
+  margin-top: 250px;
   margin-bottom: 20px;
   min-height: 90vh;
+}
+
+
+/* extract this css out later */
+
+.steps {
+  margin-top: -41px;
+  display: inline-block;
+  float: right;
+  font-size: 16px;
+}
+
+.step {
+  float: left;
+  background: white;
+  padding: 7px 13px;
+  padding-bottom: 10px;
+  border-radius: 1px;
+  text-align: center;
+  width: 100px;
+  position: relative;
+}
+
+.step_line {
+  margin: 0;
+  width: 0;
+  height: 0;
+  border-left: 16px solid #fff;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  z-index: 1008;
+  position: absolute;
+  left: 99px;
+  top: 1px;
+}
+
+.step_line.backline {
+  border-left: 20px solid #f7f7f7;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  z-index: 1006;
+  position: absolute;
+  left: 99px;
+  top: -3px;
+}
+
+.step_complete {
+  background: green;
+}
+
+.step_complete a.check-bc,
+.step_complete a.check-bc:hover,
+.afix-1,
+.afix-1:hover {
+  color: #eee;
+}
+
+.step_line.step_complete {
+  background: 0;
+  border-left: 16px solid green;
+}
+
+.step_thankyou {
+  float: left;
+  background: white;
+  padding: 7px 13px;
+  border-radius: 1px;
+  text-align: center;
+  width: 100px;
+}
+
+.step.check_step {
+  margin-left: 5px;
+}
+
+.ch_pp {
+  text-decoration: underline;
+}
+
+.ch_pp.sip {
+  margin-left: 10px;
+}
+
+.check-bc {
+  padding-left: 17px;
+}
+
+.check-bc,
+.check-bc:hover {
+  color: #222;
+}
+
+.step-table {
+  z-index: -99;
+  position: relative;
+}
+
+.step-info {
+  left: 38%;
+  top: 170px;
+  position: absolute;
 }
