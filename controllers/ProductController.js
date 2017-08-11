@@ -43,7 +43,6 @@ module.exports = {
 
 			return res.render("products/index", {
 				categoryProducts,
-				products,
 				categories,
 				cartData
 			});
@@ -62,8 +61,15 @@ module.exports = {
 			.catch(err => console.error(err));
 
 		function _renderProductView(data) {
+			let categoryProducts = [];
 			let [product, categories] = data;
 			let cartData = req.session.products;
+
+			let index = categories.findIndex(c => c.id === product.categoryId);
+			let category = categories[index].name;
+			product.dataValues["category"] = category;
+
+			console.log(product, "?????");
 
 			return res.render("products/view", { product, cartData, categories });
 		}
@@ -236,17 +242,26 @@ module.exports = {
 			.catch(err => console.error(err));
 
 		function _renderSearchResults(data) {
-			// TODO - link em up again here
+			let categoryProducts = [];
 			let [products, categories] = data;
-
-			console.log(products, categories, "???????______________________");
 
 			if (!products.length) {
 				res.end("No products found");
 				return;
 			}
 
-			return res.render("products/index", { products, categories });
+			products.forEach(productGroup => {
+				productGroup = productGroup.map(product => {
+					let index = categories.findIndex(c => c.id === product.categoryId);
+					let category = categories[index].name;
+					product.dataValues["category"] = category;
+					return product;
+				});
+
+				categoryProducts.push(productGroup);
+			});
+
+			return res.render("products/index", { categoryProducts, categories });
 		}
 	},
 
@@ -266,9 +281,21 @@ module.exports = {
 		navUtils.processSearch(type, _renderSortResults, wrapper);
 
 		function _renderSortResults(data) {
+			let categoryProducts = [];
 			let [products, categories] = data;
 
-			return res.render("products/index", { products, categories });
+			products.forEach(productGroup => {
+				productGroup = productGroup.map(product => {
+					let index = categories.findIndex(c => c.id === product.categoryId);
+					let category = categories[index].name;
+					product.dataValues["category"] = category;
+					return product;
+				});
+
+				categoryProducts.push(productGroup);
+			});
+
+			return res.render("products/index", { categoryProducts, categories });
 		}
 	},
 
@@ -287,9 +314,23 @@ module.exports = {
 			wrapper
 				.findAllCategories()
 				.then(categories => {
+					let categoryProducts = [];
 					let [products] = data;
 
-					return res.render("products/index", { products, categories });
+					products.forEach(productGroup => {
+						productGroup = productGroup.map(product => {
+							let index = categories.findIndex(
+								c => c.id === product.categoryId
+							);
+							let category = categories[index].name;
+							product.dataValues["category"] = category;
+							return product;
+						});
+
+						categoryProducts.push(productGroup);
+					});
+
+					return res.render("products/index", { categoryProducts, categories });
 				})
 				.catch(err => console.error(err));
 		}

@@ -17,45 +17,6 @@ router.all("/:resource/:id?", (req, res) => {
 	determineMethod(req)(req, res);
 });
 
-router.post("/:resource/type/:searchType", (req, res) => {
-	const types = {
-		search: "search",
-		filter: "filter",
-		sort: "sort"
-	};
-
-	controller = controllers[req.params.resource];
-	searchType = types[req.params.searchType];
-
-	if (controller === undefined || searchType === undefined) {
-		return res.json({
-			confirmation: "fail",
-			error: "invalid resource or search type"
-		});
-	}
-
-	determineSearch(searchType)(req, res);
-});
-
-function determineSearch(searchType) {
-	switch (searchType) {
-		case "search":
-			return controller.search;
-			break;
-
-		case "sort":
-			return controller.sort;
-			break;
-
-		case "filter":
-			return controller.filter;
-			break;
-
-		default:
-			return undefined;
-	}
-}
-
 function determineMethod(req) {
 	if (req.params.id === undefined) {
 		if (req.method === "GET") {
@@ -66,15 +27,32 @@ function determineMethod(req) {
 	}
 
 	if (req.method === "GET") {
-		if (req.params.id === "cart") {
-			return controller.viewCart;
+		switch (req.params.id) {
+			case "cart":
+				return controller.viewCart;
+			default:
+				return;
 		}
+
 		return controller.view;
 	}
 
 	if (req.method === "POST") {
-		if (req.params.id === "cart") {
-			return controller.addToCart;
+		switch (req.params.id) {
+			case "cart":
+				return controller.addToCart;
+
+			case "search":
+				return controller.search;
+
+			case "sort":
+				return controller.sort;
+
+			case "filter":
+				return controller.filter;
+
+			default:
+				return;
 		}
 	}
 
