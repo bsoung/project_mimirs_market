@@ -1,4 +1,5 @@
 const getModelWrapper = require("../models/index");
+const wrapper = getModelWrapper();
 const { navUtils } = require("../utils");
 
 /**
@@ -11,19 +12,22 @@ module.exports = {
    * ProductController.index()
    */
 	index: function(req, res) {
-		const wrapper = getModelWrapper();
-
 		Promise.all([
 			wrapper.findAllProductsAndGroup(3, { limit: 10 }),
 			wrapper.findAllCategories()
 		])
 			.then(_renderProductsIndex)
-			.catch(err => console.error(err));
+			.catch(err => {
+				return res.json({
+					confirmation: "fail",
+					error: err.message
+				});
+			});
 
 		function _renderProductsIndex(data) {
 			let [products, categories] = data;
 
-			res.render("products/index", { products, categories });
+			return res.render("products/index", { products, categories });
 		}
 	},
 
@@ -31,7 +35,6 @@ module.exports = {
    * ProductController.view()
    */
 	view: function(req, res) {
-		// TODO
 		const wrapper = getModelWrapper();
 		const id = req.params.id;
 
@@ -42,7 +45,7 @@ module.exports = {
 		function _renderProductView(data) {
 			let [product] = data;
 
-			res.render("products/view", { product });
+			return res.render("products/view", { product });
 		}
 	},
 
@@ -108,11 +111,56 @@ module.exports = {
 		});
 	},
 
+	addToCart: function(req, res) {
+		const id = req.body.productId;
+
+		if (req.session["products"] === undefined) {
+			req.session["products"] = [];
+		}
+
+		let options = {
+			where: {
+				id: id
+			}
+		};
+
+		let item = {};
+
+		wrapper
+			.findAllProducts(options)
+			.then(products => {
+				item["name"] = products[0]["name"];
+				item["img"] = products[0]["img"];
+				item["price"] = products[0]["price"];
+				item["productId"] = products[0]["id"];
+
+				return wrapper.findAllCategories(options);
+			})
+			.then(categories => {
+				item["categoryName"] = categories[0]["name"];
+
+				req.session.products.push(item);
+
+				return res.redirect("/products");
+			});
+	},
+
+	viewCart: function(req, res) {
+		if (req.session["productIds"] === undefined) {
+			req.session["productIds"] = [];
+		}
+
+		let products = req.session.products;
+
+		res.render("cart/index", { products });
+	},
+
 	/**
    * ProductController.remove()
    */
 	remove: function(req, res) {
 		var id = req.params.id;
+
 		ProductModel.findByIdAndRemove(id, function(err, Product) {
 			if (err) {
 				return res.status(500).json({
@@ -128,8 +176,6 @@ module.exports = {
    * Search 
    */
 	search: function(req, res) {
-		const wrapper = getModelWrapper();
-
 		Promise.all([
 			wrapper.findAllProductsAndGroup(3, {
 				where: {
@@ -152,7 +198,7 @@ module.exports = {
 				return;
 			}
 
-			res.render("products/index", { products, categories });
+			return res.render("products/index", { products, categories });
 		}
 	},
 
@@ -165,7 +211,6 @@ module.exports = {
 			5: "Oldest First"
 		};
 
-		const wrapper = getModelWrapper();
 		const sortMethod = req.body.refine.sort;
 
 		let type = sortMap[sortMethod];
@@ -175,13 +220,11 @@ module.exports = {
 		function _renderSortResults(data) {
 			let [products, categories] = data;
 
-			res.render("products/index", { products, categories });
+			return res.render("products/index", { products, categories });
 		}
 	},
 
 	filter: function(req, res) {
-		const wrapper = getModelWrapper();
-
 		let { productQuery, categoriesQuery } = navUtils.buildQuery(req);
 
 		Promise.all([
@@ -193,13 +236,12 @@ module.exports = {
 
 		function _renderFilteredResults(data) {
 			// reset our categories to full
-			const wrapper = getModelWrapper();
 			wrapper
 				.findAllCategories()
 				.then(categories => {
 					let [products] = data;
 
-					res.render("products/index", { products, categories });
+					return res.render("products/index", { products, categories });
 				})
 				.catch(err => console.error(err));
 		}

@@ -1,22 +1,34 @@
-var express = require("express");
-var path = require("path");
-var favicon = require("serve-favicon");
-var logger = require("morgan");
-var cookieParser = require("cookie-parser");
-var bodyParser = require("body-parser");
+const express = require("express");
+const path = require("path");
+const favicon = require("serve-favicon");
+const logger = require("morgan");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 
-var exphbs = require("express-handlebars");
+const exphbs = require("express-handlebars");
+const session = require("express-session");
+
+const app = express();
+require("dotenv").config();
 
 const mongoose = require("mongoose");
 const Promise = require("bluebird");
 
+// express session
+app.use(
+	session({
+		secret: "123fljwejflkkwjelk23jlkf23fl2k3jl23kfjlk23j329f4",
+		resave: false,
+		saveUninitialized: true,
+		maxAge: 9999
+	})
+);
+
+// mongoose
 mongoose.Promise = Promise;
 
-var app = express();
-require("dotenv").config();
-
 // connect to mongoose
-let beginConnection = mongoose.createConnection(process.env.DB_URL, {
+const beginConnection = mongoose.createConnection(process.env.DB_URL, {
 	useMongoClient: true
 });
 
@@ -46,8 +58,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-const apiRoutes = require("./routes/index");
-app.use("/", apiRoutes);
+app.use("/", require("./routes/index"));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

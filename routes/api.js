@@ -6,12 +6,12 @@ let searchType;
 
 router.all("/:resource/:id?", (req, res) => {
 	controller = controllers[req.params.resource];
+
 	if (controller === undefined) {
-		res.json({
+		return res.json({
 			confirmation: "fail",
 			resource: "invalid resource"
 		});
-		return;
 	}
 	// returns the method
 	determineMethod(req)(req, res);
@@ -28,11 +28,10 @@ router.post("/:resource/type/:searchType", (req, res) => {
 	searchType = types[req.params.searchType];
 
 	if (controller === undefined || searchType === undefined) {
-		res.json({
+		return res.json({
 			confirmation: "fail",
 			error: "invalid resource or search type"
 		});
-		return;
 	}
 
 	determineSearch(searchType)(req, res);
@@ -64,18 +63,27 @@ function determineMethod(req) {
 		} else {
 			return controller.create;
 		}
-	} else {
-		if (req.method === "GET") {
-			return controller.view;
-		}
+	}
 
-		if (req.method === "PUT") {
-			return controller.update;
+	if (req.method === "GET") {
+		if (req.params.id === "cart") {
+			return controller.viewCart;
 		}
+		return controller.view;
+	}
 
-		if (req.method === "DELETE") {
-			return controller.remove;
+	if (req.method === "POST") {
+		if (req.params.id === "cart") {
+			return controller.addToCart;
 		}
+	}
+
+	if (req.method === "PUT") {
+		return controller.update;
+	}
+
+	if (req.method === "DELETE") {
+		return controller.remove;
 	}
 
 	return undefined;

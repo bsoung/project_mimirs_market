@@ -1,4 +1,5 @@
 const getModelWrapper = require("../models/index");
+let wrapper = getModelWrapper();
 /**
  * UserController.js
  *
@@ -9,11 +10,9 @@ module.exports = {
    * UserController.index()
    */
 	index: function(req, res) {
-		let wrapper = getModelWrapper();
-
 		Promise.all([wrapper.findAllUsers()])
 			.then(_renderUsersIndex)
-			.catch(_catchError.call(res, "Error getting users from database."));
+			.catch(err => console.error(err));
 
 		function _renderUsersIndex(data) {
 			let [users] = data;
@@ -26,12 +25,11 @@ module.exports = {
    * UserController.view()
    */
 	view: function(req, res) {
-		let wrapper = getModelWrapper();
 		const id = req.params.id;
 
 		Promise.all([wrapper.findUserById(id)])
 			.then(_renderUserView)
-			.catch(_catchError.call(res, "Error getting user from database."));
+			.catch(err => console.error(err));
 
 		function _renderUserView(data) {
 			let [user] = data;
@@ -50,22 +48,30 @@ module.exports = {
    * UserController.create()
    */
 	create: function(req, res) {
-		var User = new User({
-			username: req.body.username,
-			password: req.body.password,
-			email: req.body.email,
-			userTypeId: req.body.userTypeId
-		});
+		if (!req.body.username || !req.body.password || !req.body.email) {
+			return res.json({
+				confirmation: "fail",
+				message: "please enter all fields"
+			});
+		}
 
-		User.save(function(err, User) {
-			if (err) {
-				return res.status(500).json({
-					message: "Error when creating User",
-					error: err
-				});
-			}
-			return res.status(201).json(User);
-		});
+		wrapper
+			.findAllUsers({ where: { email: req.body.email } })
+			.then(users => {
+				if (users.length) {
+					return res.json({
+						confirmation: "fail",
+						message: "user already exists"
+					});
+				}
+
+				return wrapper.createNewUser(req.body);
+			})
+			.then(user => {
+				req.session["loggedIn"] = true;
+				res.redirect(`/users/${user.id}`);
+			})
+			.catch(err => console.error(err));
 	},
 
 	/**
@@ -121,11 +127,4 @@ module.exports = {
 			return res.status(204).json();
 		});
 	}
-};
-
-const _catchError = msg => err => {
-	return this.status(500).json({
-		message: msg,
-		error: err
-	});
 };

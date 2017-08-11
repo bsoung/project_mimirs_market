@@ -1,8 +1,8 @@
-const router = require('./api');
+const router = require("./api");
 
-router.get('/', (req, res) => {
-	res.render('landing', {
-		layout: 'main-no-nav'
+router.get("/", (req, res) => {
+	return res.render("landing", {
+		layout: "main-no-nav"
 	});
 });
 

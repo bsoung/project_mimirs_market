@@ -1,10 +1,10 @@
-const ModelWrapper = require('./model-wrapper');
-const MODEL_USER = 'User';
-const MODEL_PRODUCT = 'Product';
-const MODEL_ORDER = 'Order';
-const MODEL_CATEGORY = 'Category';
+const ModelWrapper = require("./model-wrapper");
+const MODEL_USER = "User";
+const MODEL_PRODUCT = "Product";
+const MODEL_ORDER = "Order";
+const MODEL_CATEGORY = "Category";
 
-const ORM_SEQUELIZE = 'sequelize';
+const ORM_SEQUELIZE = "sequelize";
 
 class SequelizeWrapper extends ModelWrapper {
 	constructor(db) {
@@ -21,6 +21,10 @@ class SequelizeWrapper extends ModelWrapper {
 
 	findUserById(id) {
 		return this.findById(MODEL_USER, id);
+	}
+
+	createNewUser(params) {
+		return this.create(MODEL_USER, params);
 	}
 
 	/******************************
