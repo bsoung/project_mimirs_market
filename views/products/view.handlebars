@@ -1,10 +1,17 @@
-<header class="page-header">
-	{{>_product product=product}}
+<header>
+  {{>_navbar cartData=cartData}}
+</header>
+
+<div class="container-fluid product-view">
+	<div class="singe-product">
+		{{>_product product=product}}
+	</div>
+	
   {{!-- <h1>Product: {{ product.name }}</h1>
   <img src={{ product.img }} alt="">
   <h3>Price: {{ product.price }}</h3>
   <p>Description: {{product.description}}</p>
   <a href="/products/{{ product.id }}/edit" class="btn btn-primary">Edit</a>
   <a href="/products/{{ product.id }}?_method=delete" class="btn btn-danger">Delete</a> --}}
-</header>
+</div>
 

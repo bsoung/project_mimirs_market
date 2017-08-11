@@ -1,12 +1,27 @@
-<h1>Your Cart</h1>
-{{#each products as |product|}}
-	<div class="media">
-	  <a class="pull-left" href="#">
-	    <img class="media-object img-rounded" width="304" src="{{product.img}}">
-	  </a>
-	  <div class="media-body">
-	    <h4 class="media-heading">{{product.name}}</h4>
-	    ...
-	  </div>
+<header>
+  {{>_navbar cartData=cartData categories=categories}}
+</header>
+
+<div class="cart-display">
+	<h1>Your Cart</h1>
+	{{#each cartData as |product|}}
+		<div class="media">
+		  <a class="pull-left" href="#">
+		    <img class="media-object img-rounded" width="200" src="{{product.img}}">
+		  </a>
+		  <div class="media-body">
+		    <h3 class="media-heading">{{product.name}}</h3>
+		    <p>{{product.categoryName}}</p>
+		    <p>{{product.price}}</p>
+		  </div>
+		  <div>
+		  	<label for="product-quantity">Amount</label>
+		  	<input  type="number" name="product-quantity" value="{{product.count}}">
+		  </div>
+		</div>
+	{{/each}}
+	<div class="total-cost">
+		<h2>Total: ${{total.amount}}</h2>
 	</div>
-{{/each}}
+</div>
+

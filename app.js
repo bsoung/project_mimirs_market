@@ -20,7 +20,9 @@ app.use(
 		secret: "123fljwejflkkwjelk23jlkf23fl2k3jl23kfjlk23j329f4",
 		resave: false,
 		saveUninitialized: true,
-		maxAge: 9999
+		cookie: {
+			maxAge: 24 * 60 * 60
+		}
 	})
 );
 

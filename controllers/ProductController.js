@@ -12,6 +12,10 @@ module.exports = {
    * ProductController.index()
    */
 	index: function(req, res) {
+		// if (req.session["products"] === undefined) {
+		// 	req.session["products"] = [];
+		// }
+
 		Promise.all([
 			wrapper.findAllProductsAndGroup(3, { limit: 10 }),
 			wrapper.findAllCategories()
@@ -26,8 +30,9 @@ module.exports = {
 
 		function _renderProductsIndex(data) {
 			let [products, categories] = data;
+			let cartData = req.session.products;
 
-			return res.render("products/index", { products, categories });
+			return res.render("products/index", { products, categories, cartData });
 		}
 	},
 
@@ -38,14 +43,15 @@ module.exports = {
 		const wrapper = getModelWrapper();
 		const id = req.params.id;
 
-		Promise.all([wrapper.findProductById(id)])
+		Promise.all([wrapper.findProductById(id), wrapper.findAllCategories()])
 			.then(_renderProductView)
 			.catch(err => console.error(err));
 
 		function _renderProductView(data) {
-			let [product] = data;
+			let [product, categories] = data;
+			let cartData = req.session.products;
 
-			return res.render("products/view", { product });
+			return res.render("products/view", { product, cartData, categories });
 		}
 	},
 
@@ -112,11 +118,23 @@ module.exports = {
 	},
 
 	addToCart: function(req, res) {
-		const id = req.body.productId;
-
+		console.log("HFEJLWLKWEJFLEJ");
 		if (req.session["products"] === undefined) {
 			req.session["products"] = [];
 		}
+
+		const id = req.body.productId;
+
+		// loop thru and remove duplicates and increment count if same order placed
+		// let index =
+
+		// if (index !== -1) {
+		// 	let copy = Object.assign({}, req.session.products[index]);
+		// 	copy.count += 1;
+		// 	req.session.products.push(copy);
+		// 	console.log(req.session.products, "????");
+		// 	return res.redirect("/products");
+		// }
 
 		let options = {
 			where: {
@@ -133,26 +151,49 @@ module.exports = {
 				item["img"] = products[0]["img"];
 				item["price"] = products[0]["price"];
 				item["productId"] = products[0]["id"];
+				item["count"] = 1;
+
+				options["productId"] = item["productId"];
 
 				return wrapper.findAllCategories(options);
 			})
 			.then(categories => {
 				item["categoryName"] = categories[0]["name"];
 
-				req.session.products.push(item);
+				let index = req.session.products.findIndex(
+					p => p.productId === options.productId
+				);
+
+				if (index === -1) {
+					req.session.products.push(item);
+				} else {
+					req.session.products[index].count += 1;
+				}
+
+				console.log(req.session.products);
 
 				return res.redirect("/products");
 			});
 	},
 
 	viewCart: function(req, res) {
-		if (req.session["productIds"] === undefined) {
-			req.session["productIds"] = [];
-		}
+		let cartData = req.session.products;
+		let total;
+		let sum = 0;
 
-		let products = req.session.products;
+		wrapper.findAllCategories().then(categories => {
+			cartData.forEach(product => {
+				sum += parseFloat(product.price);
+			});
 
-		res.render("cart/index", { products });
+			req.session["totalCost"] = { amount: sum.toFixed(2) };
+			total = req.session.totalCost;
+
+			res.render("cart/index", { cartData, categories, total });
+		});
+
+		// var result = parseFloat('2.3') + parseFloat('2.4');
+		// alert(result.toFixed(2));​
 	},
 
 	/**

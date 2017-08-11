@@ -95,18 +95,20 @@ a:link {
 /*** PRODUCTS PAGES ***/
 
 .products-container {
-  background: #f5f5f5;
+  min-height: 90vh;
 }
 
 .product-container {
   border: 0.5px solid #3a076f;
+  background-color: #f5f5f5;
   padding-top: 15px;
   margin-bottom: 20px;
   margin-left: 10px margin-right: 10px;
+  border-radius: 20px;
 }
 
 .products-list {
-  margin-top: 270px;
+  margin-top: 200px;
   margin-bottom: 100px;
 }
 
@@ -129,7 +131,7 @@ a:link {
 .caption {
   font-size: 0.9em;
   margin-bottom: 20px;
-  overflow: scroll;
+  overflow: wrap;
   height: 140px;
   max-height: 140px;
   max-width: 400px;
@@ -144,6 +146,11 @@ a.product {
   background-color: #3a076f;
 }
 
+.well {
+  padding: 0;
+  padding-top: 15px;
+}
+
 .btn-success {
   border: none;
   background-color: green;
@@ -153,4 +160,23 @@ a.product {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.advanced-bar {
+  display: none;
+}
+
+.product-view {
+  position: relative;
+  min-height: 90vh;
+}
+
+.singe-product {
+  margin-top: 13%;
+}
+
+.cart-display {
+  margin-top: 160px;
+  margin-bottom: 20px;
+  min-height: 90vh;
 }
