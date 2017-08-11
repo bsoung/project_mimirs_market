@@ -1,27 +1,27 @@
-'use strict';
-const faker = require('faker');
+"use strict";
+const faker = require("faker");
 module.exports = {
 	up: function(queryInterface, Sequelize) {
 		let categories = [
-			'abstract',
-			'animals',
-			'business',
-			'cats',
-			'city',
-			'food',
-			'nightlife',
-			'fashion',
-			'people',
-			'nature',
-			'sports',
-			'technics',
-			'transport'
+			"abstract",
+			"animals",
+			"business",
+			"cats",
+			"city",
+			"food",
+			"nightlife",
+			"fashion",
+			"people",
+			"nature",
+			"sports",
+			"technics",
+			"transport"
 		];
 
 		const products = [];
 
 		for (let a = 0; a < categories.length; a++) {
-			for (let i = 0; i < 20; i++) {
+			for (let i = 0; i < 3; i++) {
 				products.push({
 					name: faker.random.words(3),
 					img: faker.image[categories[a]](),
@@ -33,10 +33,10 @@ module.exports = {
 			}
 		}
 
-		return queryInterface.bulkInsert('Products', products);
+		return queryInterface.bulkInsert("Products", products);
 	},
 
 	down: function(queryInterface, Sequelize) {
-		return queryInterface.bulkDelete('Products', null, {}, Sequelize.Product);
+		return queryInterface.bulkDelete("Products", null, {}, Sequelize.Product);
 	}
 };

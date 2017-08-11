@@ -1,5 +1,5 @@
 <header>
-  {{>_navbar}}
+  {{>_navbar cartData=cartData categories=categories}}
 </header>
 
 <div class="row products-container">
@@ -8,8 +8,8 @@
     <a href="/products/new" class="btn btn-primary">+ New Product</a>
   </header> -->
   <div class="col-xs-12 products-list">
-    {{#if products.length }}
-      {{#each products as |productGroup| }}
+    {{#if categoryProducts.length }}
+      {{#each categoryProducts as |productGroup| }}
         <div class="row flex-row">
         {{#each productGroup as |product|}}
           {{>_product product=product}}

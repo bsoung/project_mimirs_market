@@ -7,6 +7,10 @@ body {
   font: 14px Ubuntu, "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+a {
+  color: black;
+}
+
 a:link {
   text-decoration: none !important;
 }
@@ -30,6 +34,10 @@ a:link {
 }
 
 .page-nav-container a:hover {
+  color: green;
+}
+
+.page-nav-container a:active {
   color: green;
 }
 

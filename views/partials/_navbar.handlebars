@@ -15,15 +15,15 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="/products" class="btn-lg"><span class="glyphicon glyphicon-search" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Search Products"></span></a></li>
+          <li><a href="/products" class="btn-lg"><span class="glyphicon glyphicon-search" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Search"></span></a></li>
           <li class="dropdown">
             <a href="#" class="btn-lg dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> <span class="caret"></span></a>
             <ul class="dropdown-menu">
-              {{#each cartData as |item|}}
-                <li><a href="/products/{{item.productId}}">{{item.name}}</a></li>
+              {{#each cartData as |product|}}
+                <li><a href="/products/{{product.productId}}">{{product.count}}x &nbsp;{{product.name}}</a></li>
               {{/each}}
               <li role="separator" class="divider"></li>
-              <li><a href="/products/cart">Cart</a></li>
+              <li><a href="/products/cart" style="color: #3a076f; font-size: 1.1em;">View Cart</a></li>
             </ul>
           </li>
           <li><a href="/dashboard" class="btn-lg"><span class="glyphicon glyphicon-dashboard" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Dashboard"></span></a></li>

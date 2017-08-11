@@ -12,12 +12,8 @@ module.exports = {
    * ProductController.index()
    */
 	index: function(req, res) {
-		// if (req.session["products"] === undefined) {
-		// 	req.session["products"] = [];
-		// }
-
 		Promise.all([
-			wrapper.findAllProductsAndGroup(3, { limit: 10 }),
+			wrapper.findAllProductsAndGroup(3),
 			wrapper.findAllCategories()
 		])
 			.then(_renderProductsIndex)
@@ -29,10 +25,28 @@ module.exports = {
 			});
 
 		function _renderProductsIndex(data) {
+			let categoryProducts = [];
+
 			let [products, categories] = data;
 			let cartData = req.session.products;
 
-			return res.render("products/index", { products, categories, cartData });
+			products.forEach(productGroup => {
+				productGroup = productGroup.map(product => {
+					let index = categories.findIndex(c => c.id === product.categoryId);
+					let category = categories[index].name;
+					product.dataValues["category"] = category;
+					return product;
+				});
+
+				categoryProducts.push(productGroup);
+			});
+
+			return res.render("products/index", {
+				categoryProducts,
+				products,
+				categories,
+				cartData
+			});
 		}
 	},
 
@@ -118,50 +132,42 @@ module.exports = {
 	},
 
 	addToCart: function(req, res) {
-		console.log("HFEJLWLKWEJFLEJ");
 		if (req.session["products"] === undefined) {
 			req.session["products"] = [];
 		}
 
-		const id = req.body.productId;
-
-		// loop thru and remove duplicates and increment count if same order placed
-		// let index =
-
-		// if (index !== -1) {
-		// 	let copy = Object.assign({}, req.session.products[index]);
-		// 	copy.count += 1;
-		// 	req.session.products.push(copy);
-		// 	console.log(req.session.products, "????");
-		// 	return res.redirect("/products");
-		// }
-
-		let options = {
+		const productOptions = {
 			where: {
-				id: id
+				id: req.body.productId
 			}
 		};
 
+		let obj = {};
 		let item = {};
 
 		wrapper
-			.findAllProducts(options)
+			.findAllProducts(productOptions)
 			.then(products => {
 				item["name"] = products[0]["name"];
 				item["img"] = products[0]["img"];
 				item["price"] = products[0]["price"];
 				item["productId"] = products[0]["id"];
+				item["categoryId"] = products[0]["categoryId"];
 				item["count"] = 1;
 
-				options["productId"] = item["productId"];
+				const catOptions = {
+					where: {
+						id: item.categoryId
+					}
+				};
 
-				return wrapper.findAllCategories(options);
+				return wrapper.findAllCategories(catOptions);
 			})
 			.then(categories => {
 				item["categoryName"] = categories[0]["name"];
 
 				let index = req.session.products.findIndex(
-					p => p.productId === options.productId
+					p => p.productId === item.productId
 				);
 
 				if (index === -1) {
@@ -169,8 +175,6 @@ module.exports = {
 				} else {
 					req.session.products[index].count += 1;
 				}
-
-				console.log(req.session.products);
 
 				return res.redirect("/products");
 			});
@@ -183,7 +187,7 @@ module.exports = {
 
 		wrapper.findAllCategories().then(categories => {
 			cartData.forEach(product => {
-				sum += parseFloat(product.price);
+				sum += parseFloat(product.price) * product.count;
 			});
 
 			req.session["totalCost"] = { amount: sum.toFixed(2) };
@@ -232,7 +236,10 @@ module.exports = {
 			.catch(err => console.error(err));
 
 		function _renderSearchResults(data) {
+			// TODO - link em up again here
 			let [products, categories] = data;
+
+			console.log(products, categories, "???????______________________");
 
 			if (!products.length) {
 				res.end("No products found");
